@@ -10,3 +10,104 @@
         </body>
         </html>
         
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>개인 주식 분석기</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  font-family: Arial, sans-serif;
+    background:#111;
+      color:#fff;
+        padding:20px;
+        }
+        h1 { color:#00ff99; }
+        input, button {
+          width:100%;
+            padding:12px;
+              margin-top:10px;
+                font-size:16px;
+                }
+                button {
+                  background:#00ff99;
+                    border:none;
+                      font-weight:bold;
+                      }
+                      .result {
+                        margin-top:20px;
+                          font-size:18px;
+                            padding:15px;
+                              border:1px solid #00ff99;
+                              }
+                              .buy { color:#00ff99; }
+                              .sell { color:#ff5555; }
+                              .wait { color:#ffaa00; }
+                              </style>
+                              </head>
+                              <body>
+
+                              <h1>📈 개인 주식 분석 앱</h1>
+
+                              <input type="file" id="csvFile" accept=".csv">
+                              <button onclick="analyze()">분석하기</button>
+
+                              <div id="output" class="result">CSV를 업로드하세요</div>
+
+                              <script>
+                              function analyze() {
+                                const file = document.getElementById('csvFile').files[0];
+                                  if (!file) {
+                                      alert("CSV 파일을 선택하세요");
+                                          return;
+                                            }
+
+                                              const reader = new FileReader();
+                                                reader.onload = function(e) {
+                                                    const lines = e.target.result.split("\n");
+                                                        let closes = [];
+
+                                                            for (let i = 1; i < lines.length; i++) {
+                                                                  const cols = lines[i].split(",");
+                                                                        if (cols.length > 4) {
+                                                                                closes.push(parseFloat(cols[4]));
+                                                                                      }
+                                                                                          }
+
+                                                                                              const ma5 = avg(closes.slice(-5));
+                                                                                                  const ma20 = avg(closes.slice(-20));
+                                                                                                      const last = closes[closes.length - 1];
+
+                                                                                                          let signal = "";
+                                                                                                              let cls = "";
+
+                                                                                                                  if (last > ma5 && ma5 > ma20) {
+                                                                                                                        signal = "📈 매수 신호";
+                                                                                                                              cls = "buy";
+                                                                                                                                  } else if (last < ma5 && ma5 < ma20) {
+                                                                                                                                        signal = "📉 매도 신호";
+                                                                                                                                              cls = "sell";
+                                                                                                                                                  } else {
+                                                                                                                                                        signal = "⏸ 관망";
+                                                                                                                                                              cls = "wait";
+                                                                                                                                                                  }
+
+                                                                                                                                                                      document.getElementById("output").innerHTML = `
+                                                                                                                                                                            종가: ${last.toFixed(2)}<br>
+                                                                                                                                                                                  5일선: ${ma5.toFixed(2)}<br>
+                                                                                                                                                                                        20일선: ${ma20.toFixed(2)}<br><br>
+                                                                                                                                                                                              <b class="${cls}">${signal}</b>
+                                                                                                                                                                                                  `;
+                                                                                                                                                                                                    };
+                                                                                                                                                                                                      reader.readAsText(file);
+                                                                                                                                                                                                      }
+
+                                                                                                                                                                                                      function avg(arr) {
+                                                                                                                                                                                                        return arr.reduce((a,b)=>a+b,0)/arr.length;
+                                                                                                                                                                                                        }
+                                                                                                                                                                                                        </script>
+
+                                                                                                                                                                                                        </body>
+                                                                                                                                                                                                        </html>
+                                                                                                                                                                                                        
